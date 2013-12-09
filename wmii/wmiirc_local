@@ -1,0 +1,104 @@
+#!/bin/bash
+
+MODKEY=Mod4
+
+SCRIPTS=~/.bin
+
+# colors tuples: "<text> <background> <border>"
+export WMII_NORMCOLORS='#888888 #222222 #333333'
+export WMII_FOCUSCOLORS='#ffffff #285577 #4c7899'
+export ALERT_COLORS='#FFFFFF #552222 #333333'
+export WEIRD_COLORS='#ffffff #222222 #333333'
+export BORDER_COLORS='#888888 #222222 #285577'
+
+export WMII_BACKGROUND='#333333'
+export WMII_FONT='-*-fixed-medium-r-*-*-12-*-*-*-*-*-*-*'
+
+
+set -- $(echo $WMII_NORMCOLORS $WMII_FOCUSCOLORS)
+export WMII_MENU="dmenu -b -fn '$WMII_FONT' -nf '$1' -nb '$2' -sf '$4' -sb '$5'"
+export WMII_9MENU="wmii9menu -font '$WMII_FONT' -nf '$1' -nb '$2' -sf '$4' -sb '$5' -br '$6'"
+export WMII_TERM="urxvt"
+
+
+mail_status() {
+    if [ -f /tmp/mail-count ] ; then
+	C=$(cat /tmp/mail-count)
+	if [ 0 -eq $C ]
+	then echo "$WMII_NORMCOLORS 0" | wmiir create /rbar/01_mail
+	else echo "$BORDER_COLORS $C"  | wmiir create /rbar/01_mail
+	fi
+    else
+	$HOME/.bin/update_mail.sh &
+    fi
+}
+
+mpd_status() {
+    STATUS=$(mpc -f '[[%artist%[:%album%] - ]%title%]|[file]'| tr '\n' '\t' | sed -e 's/  /\t/g; s/\[playing\] /[playing]\t/; s|\([^\t]*\)\s*\([^\t]*\)\s*\([^\t]*\)\s*\([0-9]*:[0-9]*/[0-9]*:[0-9]*\) .*|\2 [\3] \1 [\4]|; s/\[playing\] //; s/\[paused\]/[||]/; /volume:/d;s/#//1')
+    if [ "" = "$STATUS" ] ; then wmiir rm /rbar/01_mpd 2> /dev/null
+    else echo $STATUS | wmiir create /rbar/01_mpd
+    fi
+}
+
+keymap_status() {
+    $SCRIPTS/keymap_status.sh "$WMII_NORMCOLORS" "$WMII_FOCUSCOLORS" "$ALERT_COLORS"  | wmiir create /rbar/00_keymap
+}
+
+vol_status() {
+    ALL=$($SCRIPTS/audio_ctl.sh getall)
+    STATUS=${ALL% *}
+    VOL=${ALL#* }
+    
+    case $STATUS in
+	0 )
+            COLOR="$WEIRD_COLORS" ;;
+	1 )
+            COLOR="$WMII_NORMCOLORS" ;;
+	2 )
+	    COLOR="$WMII_FOCUSCOLORS" ;;
+	3 )
+	    COLOR="$ALERT_COLORS"
+	    VOL="[m]" ;;
+    esac
+    echo "$COLOR $VOL" | wmiir create /rbar/02_volume
+}
+
+df_status() {
+	DF_home="$(df -m /home | awk 'END {print $4}')"
+	DF_root="$(df -m / | awk 'END {print $4}')"
+	DISK=""
+	if [ $DF_home -lt 100 ] ; then
+	    echo "$ALERT_COLORS /home: $DF_home" | wmiir create /rbar/00_df
+	else
+	    wmiir rm /rbar/00_df 2> /dev/null
+	fi
+	if [ $DF_root -lt 500 ] ; then
+	    echo "$ALERT_COLORS /: $DF_root" | wmiir create /rbar/00_df2
+	else
+	    wmiir rm /rbar/00_df2 2> /dev/null
+	fi
+}
+
+ram_status() {
+    free -m | awk -v NORM="$WMII_NORMCOLORS " -v ALERT="$ALERT_COLORS " '/buffers\// {mu=$3; mf=$4} /Swap/ {su=$3; sf=$4} END {if (mf < 400 || (sf+mf) < 800) flag=ALERT ; else flag=NORM ; print flag mu "/" su " ["mf+sf"]"}' | wmiir create /rbar/04_mem
+}
+
+temp_status() {
+    sensors | awk '/Core 0/ {print $3}' | wmiir create /rbar/05_temp
+}
+
+load_status() {
+    uptime | awk -v NORM="$WMII_NORMCOLORS " -v ALERT="$ALERT_COLORS " '{tmp=$(NF-2)} END {sub(/,/, "", $(NF-2)); if ($(NF-2) > 2.0) flag=ALERT ; else flag=NORM ; print flag tmp, $(NF-1), $NF}' | wmiir create /rbar/06_load
+}
+
+status() {
+    date
+    temp_status
+    load_status
+    df_status
+    ram_status
+    mpd_status
+    mail_status
+    vol_status
+    keymap_status
+}

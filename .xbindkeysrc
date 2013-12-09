@@ -1,0 +1,56 @@
+# For the benefit of emacs users: -*- shell-script -*-
+
+# 0 is on the wrong side of the keyboard
+"wmiir xwrite /ctl 'view 0'"
+  Mod4 + grave
+"wmiir xwrite /client/sel/tags 0"
+  Mod4 + Shift + grave
+
+# audio control/MPD
+"~/.bin/audio_ctl.sh playpause"
+  Mod4 + Insert
+"~/.bin/audio_ctl.sh stop"
+  Mod4 + Delete
+"~/.bin/audio_ctl.sh prev"
+  Mod4 + Home
+"~/.bin/audio_ctl.sh next"
+  Mod4 + End
+
+# audio control/mixer
+"~/.bin/audio_ctl.sh low"
+  Mod2+Mod4 + Next
+"~/.bin/audio_ctl.sh high"
+  Mod4 + Prior
+"~/.bin/audio_ctl.sh mute_main"
+  Mod4 + m
+"~/.bin/audio_ctl.sh LOW"
+  Mod4 + v
+"~/.bin/audio_ctl.sh HIGH"
+  Mod4 + Shift + v
+
+"~/.bin/audio_ctl.sh line"
+  Mod4 + Alt + m
+"~/.bin/audio_ctl.sh line_low"
+  Mod4 + Alt + Next
+"~/.bin/audio_ctl.sh line_high"
+  Mod4 + Alt + Prior
+
+"~/.bin/audio_ctl.sh low_add"
+  Mod4 + Shift + Next
+"~/.bin/audio_ctl.sh high_add"
+  Mod4 + Shift + Prior
+"~/.bin/audio_ctl.sh LOW_add"
+  Mod4 + z
+"~/.bin/audio_ctl.sh HIGH_add"
+  Mod4 + Shift + z
+"~/.bin/audio_ctl.sh mute_other"
+  Mod4 + Shift + m
+
+"~/.bin/list_mail.sh"
+  Mod4 + l
+
+"~/.bin/xnightmode.sh"
+  Mod4 + Alt + Tab
+
+"sleep 1 ; xset dpms force suspend"
+  Mod4 + Shift + Tab

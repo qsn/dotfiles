@@ -1,0 +1,82 @@
+background              yes
+use_xft                 yes
+xftfont                 Bitstream Vera Sans Mono:size=8
+double_buffer           yes
+update_interval         1
+alignment               bottom_right
+gap_x                   20
+gap_y                   30
+no_buffers              yes # subtract buffers from used memory
+maximum_width           600
+minimum_size            400 400
+pad_percents            3
+own_window              no
+net_avg_samples         2
+
+# need a bit more room to display mail
+text_buffer_size        512
+
+short_units             yes
+
+color1                  ddaa00 # orange-ish
+color2                  88aadd # light blue
+
+template1               ${fs_free \1}/${fs_size \1}${goto 1380}${if_match ${fs_free_perc \1} < \2}${color1}${endif}${fs_bar \1}$color
+
+draw_shades no
+draw_outline no
+draw_borders no
+stippled_borders 10
+
+# Default colors and also border colors
+default_color white
+default_shade_color white
+default_outline_color white
+
+TEXT
+${time %Y-%m-%d %H:%M:%S %a} ${alignr}UTC ${utime %H:%M}
+
+ ${color lightgrey}System [load $loadavg] ${if_match $memperc > 80}${color1}${endif}RAM $mem/$memmax${color lightgrey} - CPU $cpu
+$hr
+${color black}${cpugraph 000000 ddaa00}${color lightgrey}
+
+/home ${template1 /home      2}
+BT    ${template1 /mnt/eric  1}
+
+$if_mpd_playing
+${color2}${mpd_artist} - ${mpd_title} ${alignr}($mpd_elapsed/$mpd_length)
+${color2}$mpd_bar
+$endif
+
+${if_up br0}
+ ${color lightgrey}Network (br0 ${addr br0})
+$hr
+Down:${color1} ${downspeedf br0}kB/s ${alignr}${color lightgrey}Up:${color2} ${upspeedf br0}kB/s
+${color black}${downspeedgraph br0 32,200 ffffff ddaa00 -l} $alignr${color black}${upspeedgraph br0 32,200 ffffff 88aadd}
+$else br0 is down
+$endif
+
+$color Processes ($running_processes/$processes)
+${color lightgrey}${hr}
+${color}Name              PID     CPU%   MEM% USER
+${color1} ${top name 1} ${top pid 1} ${top cpu 1} ${top mem 1} ${top user 1}
+${color lightgrey} ${top name 2} ${top pid 2} ${top cpu 2} ${top mem 2} ${top user 2}
+${color lightgrey} ${top name 3} ${top pid 3} ${top cpu 3} ${top mem 3} ${top user 3}
+${color}Mem usage
+${color1} ${top_mem name 1} ${top_mem pid 1} ${top_mem cpu 1} ${top_mem mem 1} ${top_mem user 1}
+${color lightgrey} ${top_mem name 2} ${top_mem pid 2} ${top_mem cpu 2} ${top_mem mem 2} ${top_mem user 2}
+${color lightgrey} ${top_mem name 3} ${top_mem pid 3} ${top_mem cpu 3} ${top_mem mem 3} ${top_mem user 3}
+
+${if_match ${execi 60 cat /tmp/mail-count} > 0}
+${color lightgrey} Mail
+${color lightgrey}${hr}
+${color1}${texeci 60 ~/.bin/list_mail_c.sh}
+${else}
+ No mail
+$hr
+$endif
+
+# replace CITY with a station id
+${color lightgrey} Weather
+${color lightgrey}${hr}
+${color lightgrey}${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY temperature 30}°C - ${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY pressure 30}mbar - ${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY wind_speed 30}km/h (${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY wind_dir 30}) - ${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY humidity 30}% - ${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY cloud_cover 30} ${weather http://weather.noaa.gov/pub/data/observations/metar/stations/ CITY weather 30}

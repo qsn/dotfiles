@@ -1,0 +1,33 @@
+pcm.dmixer {
+    type dmix
+    ipc_key 1024
+    ipc_key_add_uid 0
+    ipc_perm 0660
+}
+pcm.dsp {
+    type plug
+    slave.pcm "dmix"
+}
+
+# convert alsa API over jack API
+pcm.!default {
+    type plug
+    slave { pcm "jack" }
+}
+
+ctl.mixer0 {
+    type hw
+    card 0
+}
+
+pcm.jack {
+    type jack
+    playback_ports {
+	0 system:playback_3
+	1 system:playback_4
+    }
+    capture_ports {
+        0 system:capture_1
+        1 system:capture_2
+    }
+}

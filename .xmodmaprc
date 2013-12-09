@@ -1,0 +1,5 @@
+keycode 107 = dead_greek
+pointer = 1 2 3 4 5 11 12 8 9 10 6 7
+keycode 79 = aring Aring
+keycode 80 = adiaeresis Adiaeresis
+keycode 81 = odiaeresis Odiaeresis

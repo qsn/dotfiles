@@ -1,0 +1,11 @@
+URxvt*background: black
+URxvt*foreground: gray90
+URxvt*colorBD: #ffffff
+URxvt*scrollBar: false
+URxvt*saveLines: 8192
+URxvt*visualBell: false
+Urxvt.perl-ext-common: default.matcher
+URxvt.colorUL: #86a2be
+#URxvt*font: xft:DejaVu Sans Mono:pixelsize=11
+URxvt*iso14755: false
+URxvt*iso14755_52: false

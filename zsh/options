@@ -1,0 +1,19 @@
+# Automatically list choices on an ambiguous completion
+setopt auto_list
+
+# Completion options
+setopt complete_aliases
+setopt complete_in_word
+
+# Try to correct the spelling of commands
+setopt correct
+
+bindkey "^[^[[C" forward-word
+bindkey "^[^[[D" backward-word
+
+
+# turn directories yellow in the completion list. the rest is fine as it is
+zstyle ':completion:*:default' list-colors "di=01;33:$ZLS_COLORS"
+
+autoload zfinit
+zfinit

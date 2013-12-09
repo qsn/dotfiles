@@ -1,0 +1,49 @@
+autoload -U colors
+colors
+setopt prompt_subst
+
+host=`uname -n`
+path_color="green";
+
+# color my hostname
+case $host in
+    "kria" )
+        host_color="white" ;;
+    "hog" )
+        host_color="green" ;;
+    "zen" )
+        host_color="cyan" ;;
+    * )
+        host_color="yellow";;
+esac
+
+date_color="white";
+arrobase_color="white";
+sep_color="cyan";
+
+if [ $UID -eq 0 ]; then
+	user_color="red";
+	prompt_command="%{$fg_bold[$user_color]%}#%{$fg_bold[white]%} %{$reset_color%}";
+else
+	user_color="yellow";
+	prompt_command="%{$fg_bold[$user_color]%}%%%{$fg_bold[white]%} %{$reset_color%}";
+fi
+
+
+prompt_host="%{$fg_bold[$user_color]%}%n%{$fg_no_bold[$arrobase_color]%}@%{$fg_bold[$host_color]%}%M%{$reset_color%}"
+prompt_date="[%{$fg_bold[$date_color]%}%D%{$fg_no_bold[white]%}%{$reset_color%}]"
+prompt_time="%{$fg_bold[$date_color]%}%T%{$fg_no_bold[white]%}%{$reset_color%}"
+prompt_path="%B%{$fg_bold[$path_color]%}%~%b%{$reset_color%}"
+prompt_returncode="%{$reset_color%}%(?.%{$fg_bold[green]%}OK.%{$fg_bold[red]%}%130(?.Interr.%?))%{$reset_color%}"
+end="%{$fg_bold[$sep_color]%}%{$reset_color%}$prompt_time $prompt_command"
+
+prompt_path2="%B%{$fg_no_bold[$path_color]%}%~%b%{$reset_color%}"
+prompt_time2="%{$fg_no_bold[$date_color]%}%T%{$fg_no_bold[white]%}%{$reset_color%}"
+PROMPT="$prompt_host:$prompt_path
+$prompt_time2 $prompt_command"
+
+
+DONTSETRPROMPT=1
+RPROMPT="%{$reset_color%}[$prompt_returncode]"
+
+PS2="%{$fg_bold[yellow]%}%_%{$reset_color%}>"

@@ -1,0 +1,54 @@
+alias cal='cal -m -3'
+alias wget='wget --prefer-family=IPv4'
+
+alias fm='fetchmail'
+alias nb="newsbeuter -r"
+alias ftpfbx="lftp -u freebox hd1.freebox.fr"
+
+# change speed with fixed pitch
+alias scaleplayer='mplayer -af scaletempo=stride=30:overlap=.50:search=10'
+
+alias mv='mv -i'
+alias rm='rm -i'
+alias cp='cp -i'
+
+alias e='emacs -nw'
+alias n='cat > /dev/null'
+alias m='mutt -y'
+
+# follow a logfile
+alias flog='tail -n 0 -f'
+
+
+function mplayer ()
+{
+    MPLAYER=/usr/bin/mplayer
+    $MPLAYER -ao jack:port=$(audio_ctl.sh jack_port) $@
+}
+
+function capoplayer ()
+{
+    capo=$1
+    shift
+    mplayer -af scaletempo=speed=pitch -speed $((1.059463094352953**$capo)) $@
+}
+
+function metronome ()
+{
+    ecasound -i null -o alsa -el:sine_fcac,880,1 -eemb:$1,10 -efl:2000
+}
+
+function subtext ()
+{
+  sed '/^[0-9]*\r*$/d;/ --> /d' $@ | less
+}
+
+function gc()
+{
+  grep -R --color -n $1 *.c *.h
+}
+
+function count ()
+{
+  echo -n "$@" | wc -c
+}
